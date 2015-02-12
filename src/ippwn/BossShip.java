@@ -13,7 +13,7 @@ public class BossShip extends Xwing {
 	@Override
 	synchronized public void isHit() {
 		hp--;
-		speed+=.3;
+		speed+=.5;
 		if (hp <= 0)
 			Ippwn.removeComp(this);
 	}

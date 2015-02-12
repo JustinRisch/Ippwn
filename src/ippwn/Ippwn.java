@@ -38,10 +38,9 @@ public class Ippwn extends JFrame {
 		new Thread(missle).start();
 	}
 
-	public static void removeComp(Component e) {
+	public synchronized static void removeComp(Component e) {
 		e.setLocation(-40, -40);
-
-		// contentPane.remove(e);
+		contentPane.remove(e);
 	}
 
 	public static void main(String[] args) {
@@ -77,8 +76,8 @@ public class Ippwn extends JFrame {
 			case KeyEvent.VK_ENTER:
 				if (Ippwn.wave == 0)
 					spawnWave1();
-					wave=1;
-					break;
+				wave = 1;
+				break;
 			case KeyEvent.VK_RIGHT:
 				Ship.move(1);
 				break;
@@ -86,7 +85,7 @@ public class Ippwn extends JFrame {
 				Ship.move(-1);
 				break;
 			case KeyEvent.VK_SPACE:
-				if (wave==0)
+				if (wave == 0)
 					break;
 				if (shots > 2)
 					break;
@@ -119,7 +118,8 @@ public class Ippwn extends JFrame {
 
 	public static void spawnWave1() {
 		AtomicInteger ai = new AtomicInteger();
-		Arrays.setAll(ships, x -> Optional.ofNullable( new Xwing(ai.incrementAndGet() * 40, 20)));
+		Arrays.setAll(ships, x -> Optional.ofNullable(new Xwing(ai
+				.incrementAndGet() * 40, 20)));
 		Arrays.stream(ships).filter(ship -> ship.isPresent()).forEach(x -> {
 			new Thread(x.get()).start();
 			Ippwn.contentPane.add(x.get());
@@ -136,7 +136,8 @@ public class Ippwn extends JFrame {
 
 	public static void spawnWave2() {
 		AtomicInteger ai = new AtomicInteger();
-		Arrays.setAll(ships, x -> Optional.ofNullable(new YWing(ai.incrementAndGet() * 40, 30)));
+		Arrays.setAll(ships, x -> Optional.ofNullable(new YWing(ai
+				.incrementAndGet() * 40, 30)));
 		Arrays.stream(ships).filter(ship -> ship.isPresent()).forEach(x -> {
 			new Thread(x.get()).start();
 			Ippwn.contentPane.add(x.get());

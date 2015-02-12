@@ -35,12 +35,12 @@ class Laser extends JLabel implements Runnable {
 			this.repaint();
 			Arrays.stream(Ippwn.ships).parallel()
 			.filter(x->x.isPresent())
-			.filter(x -> isCollidingWith(x.get())).findFirst().ifPresent(
+			.filter(x -> isCollidingWith(x.get())).forEach(e->e.ifPresent(
 				x -> {
 						Ippwn.removeComp(this);
-						x.get().isHit();
+						x.isHit();
 						addToScore=1; //prevents one laser from getting 2 points.
-					});
+					}));
 			try {
 				Thread.sleep(20);
 			} catch (InterruptedException e) {
@@ -53,7 +53,7 @@ class Laser extends JLabel implements Runnable {
 		Ippwn.frame.setTitle("Score: "+Ippwn.score);
 		if (Ippwn.score == 10 * Ippwn.wave)
 			if (Ippwn.wave % 3 == 1) {
-				YWing.speed=Ippwn.wave;
+				YWing.speed=Ippwn.wave+2;
 				Ippwn.spawnWave2();
 				Ippwn.wave++;
 			} else if (Ippwn.wave % 3 == 0) {
