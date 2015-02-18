@@ -4,9 +4,9 @@ import java.awt.Component;
 import java.awt.EventQueue;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.util.Arrays;
-import java.util.Optional;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -19,8 +19,7 @@ public class Ippwn extends JFrame {
 	public static int wave = 0;
 	public static JTextArea jta = new JTextArea();
 	public static int shots = 0;
-	@SuppressWarnings("unchecked")
-	public static Optional<Xwing>[] ships = new Optional[10];
+	public static Collection<Xwing> ships = Collections.synchronizedCollection(new ArrayList<Xwing>());
 	public static Ippwn frame;
 	public static ship Ship;
 	public static BossShip boss;
@@ -39,8 +38,12 @@ public class Ippwn extends JFrame {
 	}
 
 	public synchronized static void removeComp(Component e) {
-		e.setLocation(-40, -40);
+		if (e instanceof Xwing){
+		ships.remove(e);
+		}
 		contentPane.remove(e);
+		e = null;
+		System.gc();
 	}
 
 	public static void main(String[] args) {
@@ -117,30 +120,29 @@ public class Ippwn extends JFrame {
 	}
 
 	public static void spawnWave1() {
-		AtomicInteger ai = new AtomicInteger();
-		Arrays.setAll(ships, x -> Optional.ofNullable(new Xwing(ai
-				.incrementAndGet() * 40, 20)));
-		Arrays.stream(ships).filter(ship -> ship.isPresent()).forEach(x -> {
-			new Thread(x.get()).start();
-			Ippwn.contentPane.add(x.get());
+		
+		for (int i = 0; i < 10; i++)
+			ships.add(new Xwing(i * 40, 20));
+		ships.stream().forEach(x -> {
+			new Thread(x).start();
+			Ippwn.contentPane.add(x);
 		});
 	}
 
 	public static void spawnBoss() {
 		boss = new BossShip(0, 0);
-		Arrays.setAll(ships, x -> Optional.ofNullable(null));
-		ships[0] = Optional.of(boss);
-		new Thread(ships[0].get()).start();
-		contentPane.add(ships[0].get());
+		ships.add(boss);
+		
+		new Thread(boss).start();
+		contentPane.add(boss);
 	}
 
 	public static void spawnWave2() {
-		AtomicInteger ai = new AtomicInteger();
-		Arrays.setAll(ships, x -> Optional.ofNullable(new YWing(ai
-				.incrementAndGet() * 40, 30)));
-		Arrays.stream(ships).filter(ship -> ship.isPresent()).forEach(x -> {
-			new Thread(x.get()).start();
-			Ippwn.contentPane.add(x.get());
+		for (int i = 0; i < 10; i++)
+			ships.add(new YWing(i * 40, 30));
+		ships.stream().forEach(x -> {
+			new Thread(x).start();
+			Ippwn.contentPane.add(x);
 			try {
 				Thread.sleep(10);
 			} catch (Exception e) {

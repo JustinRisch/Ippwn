@@ -9,6 +9,7 @@ public class Xwing extends JLabel implements Runnable {
 	int right = 1;
 	public static double speed = 2;
 	public static double missleDensity = 7;
+	public boolean isDead=false;
 	long timeSinceFired = (0);
 
 	public Xwing() {
@@ -17,10 +18,11 @@ public class Xwing extends JLabel implements Runnable {
 		this.setVisible(true);
 	}
 
-	public void isHit() {
-		Xwing.speed+=.1;
+	public synchronized void isHit() {
+		isDead=true;
+		this.setLocation(-50,-50);
+		Xwing.speed += .1;
 		Ippwn.removeComp(this);
-		
 	}
 
 	public Xwing(int x, int y) {
@@ -30,7 +32,7 @@ public class Xwing extends JLabel implements Runnable {
 	}
 
 	public void move() {
-		if (Ippwn.gameOver)
+		if (Ippwn.gameOver || isDead)
 			return;
 		this.setLocation((this.getX() + (int) speed * right), this.getY());
 
@@ -45,7 +47,7 @@ public class Xwing extends JLabel implements Runnable {
 		this.revalidate();
 		this.repaint();
 
-		if (this.getY() > 30 //delay firing until they get to the second row. 
+		if (this.getY() > 30 // delay firing until they get to the second row.
 				&& this.timeSinceFired() > (missleDensity * 1000)
 						* Math.random()) {
 			Ippwn.fire(this.getX(), this.getY());
@@ -67,12 +69,14 @@ public class Xwing extends JLabel implements Runnable {
 	public void run() {
 		try {
 			while (this.getX() >= 0) {
-				if (Ippwn.gameOver)
+				if (Ippwn.gameOver || isDead)
 					return;
 				move();
 				Thread.sleep(15);
 			}
+			this.setVisible(false);
 		} catch (Exception e) {
+			Ippwn.removeComp(this);
 		}
 	}
 }
